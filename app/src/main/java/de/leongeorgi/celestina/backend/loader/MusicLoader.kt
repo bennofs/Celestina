@@ -3,14 +3,14 @@ package de.leongeorgi.celestina.backend.loader
 import android.database.Cursor
 import android.provider.MediaStore
 import de.leongeorgi.celestina.backend.model.Song
-import de.leongeorgi.celestina.frontend.PermissionActivity
+import de.leongeorgi.celestina.frontend.CelestinaActivity
 
 /**
  * @author leon
  */
 object MusicLoader {
 
-    fun queryAllSongs(activity: PermissionActivity) =
+    fun queryAllSongs(activity: CelestinaActivity) =
             makeCursor(activity)?.let { cursor ->
                 cursor.moveToFirst()
                 return@let (1..cursor.count).map {
@@ -41,7 +41,7 @@ object MusicLoader {
     }
 
     private fun makeCursor(
-            activity: PermissionActivity,
+            activity: CelestinaActivity,
             selection: String? = null,
             selectionArgs: Array<String>? = null,
             sortOrder: String = "${MediaStore.Audio.Media.TITLE} ASC"

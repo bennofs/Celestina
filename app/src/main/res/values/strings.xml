@@ -5,4 +5,6 @@
     <string name="dialog_permission_denied_button_positive">Grant</string>
     <string name="dialog_permission_denied_button_neutral">Settings</string>
     <string name="dialog_permission_denied_button_negative">Exit</string>
+    <string name="unknown_artist_name"><![CDATA[<unknown>]]></string>
+    <string name="various_artists_name">Various Artists</string>
 </resources>

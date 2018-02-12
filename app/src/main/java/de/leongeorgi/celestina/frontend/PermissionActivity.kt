@@ -7,13 +7,12 @@ import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import de.leongeorgi.celestina.R
 import java.util.*
 
 
-abstract class PermissionActivity : AppCompatActivity() {
+abstract class PermissionActivity : CelestinaActivity() {
 
     val permissionCallbacks = mutableMapOf<Int, PermissionCallback>()
 
