@@ -1,10 +1,17 @@
 package de.leongeorgi.celestina.frontend
 
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import de.leongeorgi.celestina.R
 import java.util.*
+
 
 abstract class PermissionActivity : AppCompatActivity() {
 
@@ -40,15 +47,45 @@ abstract class PermissionActivity : AppCompatActivity() {
             return
         }
 
-        val requestCode = UUID.randomUUID().mostSignificantBits.toInt()
+        Log.i("not granted permissions", notGranted.toString())
+
+        // 16 bit random int as request id
+        val requestCode = UUID.randomUUID().mostSignificantBits.toInt() and 0xFFFF
+
         permissionCallbacks.put(requestCode, callback)
 
         ActivityCompat.requestPermissions(this, notGranted.toTypedArray(), requestCode)
     }
 
-    fun defaultPermissionCallback(grantedFunction: () -> Unit) = object : PermissionCallback {
+    fun requirePermission(vararg permissionTypes: String, grantedFunction: () -> Unit) =
+            requirePermission(
+                    *permissionTypes,
+                    callback = defaultPermissionCallback(grantedFunction)
+            )
+
+    private fun defaultPermissionCallback(grantedFunction: () -> Unit): PermissionCallback = object : PermissionCallback {
         override fun onPermissionDenied(deniedPermissions: Array<String>) {
-            TODO("open a dialog")
+            // TODO: theme
+            AlertDialog.Builder(this@PermissionActivity)
+                    .setTitle(R.string.dialog_permission_denied_title)
+                    .setMessage(R.string.dialog_permission_denied_message)
+                    .setPositiveButton(R.string.dialog_permission_denied_button_positive) { _, _ ->
+                        requirePermission(
+                                *deniedPermissions,
+                                callback = defaultPermissionCallback(grantedFunction)
+                        )
+                    }
+                    .setNeutralButton(R.string.dialog_permission_denied_button_neutral) { _, _ ->
+                        val intent = Intent()
+                        intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                        val uri = Uri.fromParts("package", packageName, null)
+                        intent.data = uri
+                        startActivity(intent)
+                    }
+                    .setNegativeButton(R.string.dialog_permission_denied_button_negative) { _, _ ->
+                        finish()
+                    }.create().show()
+
         }
 
         override fun onPermissionGranted() = grantedFunction()
