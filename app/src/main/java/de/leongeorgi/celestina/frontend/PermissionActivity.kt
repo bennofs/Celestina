@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import de.leongeorgi.celestina.R
+import de.leongeorgi.celestina.debug
 import java.util.*
 
 
@@ -21,7 +22,7 @@ abstract class PermissionActivity : CelestinaActivity() {
 
 
         if (!grantResults.contains(PackageManager.PERMISSION_DENIED)) {
-            // permission is granted
+            debug("Granted ${permissions.joinToString(", ")} with id $requestCode")
             permissionCallbacks[requestCode]?.onPermissionGranted()
         } else {
             // some permissions were denied
@@ -29,6 +30,8 @@ abstract class PermissionActivity : CelestinaActivity() {
                     .filter { it.second == PackageManager.PERMISSION_DENIED }
                     .map { it.first }
                     .toTypedArray()
+
+            debug("Denied ${deniedPermissions.joinToString(", ")} with id $requestCode")
             permissionCallbacks[requestCode]?.onPermissionDenied(deniedPermissions)
         }
         // remove callback
@@ -53,6 +56,7 @@ abstract class PermissionActivity : CelestinaActivity() {
 
         permissionCallbacks.put(requestCode, callback)
 
+        debug("Requesting ${notGranted.joinToString(", ")} with id $requestCode")
         ActivityCompat.requestPermissions(this, notGranted.toTypedArray(), requestCode)
     }
 
