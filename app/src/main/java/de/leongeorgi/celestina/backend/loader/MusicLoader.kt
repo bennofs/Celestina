@@ -20,6 +20,21 @@ object MusicLoader {
                 }
             } ?: emptyList()
 
+    fun queryLastAddedSong(activity: CelestinaActivity) =
+            queryFirstSong(activity, "${MediaStore.Audio.Media.DATE_ADDED} DESC")
+
+    fun queryLastModifiedSong(activity: CelestinaActivity) =
+            queryFirstSong(activity, "${MediaStore.Audio.Media.DATE_MODIFIED} DESC")
+
+    fun queryFirstSong(
+            activity: CelestinaActivity,
+            sortOrder: String = "${MediaStore.Audio.Media.TITLE} ASC"
+    ): Song? {
+        val cursor = makeCursor(activity, sortOrder = sortOrder)
+        cursor?.moveToFirst() ?: return null
+        return makeSong(cursor)
+    }
+
     private fun makeSong(cursor: Cursor): Song = cursor.run {
         Song(
                 getLong(0),
