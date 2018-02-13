@@ -20,8 +20,11 @@ abstract class PermissionActivity : CelestinaActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
+        val granted = grantResults
+                .map { it == PackageManager.PERMISSION_GRANTED }
+                .reduce { acc, i -> acc && i }
 
-        if (!grantResults.contains(PackageManager.PERMISSION_DENIED)) {
+        if (granted) {
             debug("Granted ${permissions.joinToString(", ")} with id $requestCode")
             permissionCallbacks[requestCode]?.onPermissionGranted()
         } else {
